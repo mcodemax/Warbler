@@ -113,6 +113,9 @@ def login():
 def logout():
     """Handle logout of user."""
 
+    do_logout()
+    flash('Logged Out!', 'success')
+    return redirect("/login")
     # IMPLEMENT THIS
 
 
@@ -290,7 +293,7 @@ def homepage():
     - anon users: no messages
     - logged in: 100 most recent messages of followed_users
     """
-
+    
     if g.user:
         messages = (Message
                     .query

@@ -8,7 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 bcrypt = Bcrypt()
 db = SQLAlchemy()
 
-
+# https://app.quickdatabasediagrams.com/#/d/bXAh5Q
 class Follows(db.Model):
     """Connection of a follower <-> followed_user."""
 
@@ -109,6 +109,9 @@ class User(db.Model):
         primaryjoin=(Follows.user_following_id == id),
         secondaryjoin=(Follows.user_being_followed_id == id)
     )
+    #https://docs.sqlalchemy.org/en/14/orm/relationship_api.html
+    #https://stackoverflow.com/questions/19598578/how-do-primaryjoin-and-secondaryjoin-work-for-many-to-many-relationship-in-s
+
 
     likes = db.relationship(
         'Message',
