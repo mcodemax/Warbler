@@ -4,8 +4,8 @@ from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
-from forms import UserAddForm, LoginForm, MessageForm, UserEditForm
-from models import Likes, db, connect_db, User, Message, Follows
+# from forms import UserAddForm, LoginForm, MessageForm, UserEditForm
+from models import db, connect_db, User, Message, Follows
 
 CURR_USER_KEY = "curr_user"
 
@@ -24,9 +24,6 @@ toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
 
-
-##############################################################################
-# User signup/login/logout
 
 
 @app.before_request
@@ -321,9 +318,9 @@ def homepage():
                     .limit(100)
                     .all())
 
-        likes_id_list = [like.id for like in g.user.likes]
+        #likes = [g.user.likes]
 
-        return render_template('home.html', messages=messages, likes=likes_id_list)
+        return render_template('home.html', messages=messages)
 
     else:
         return render_template('home-anon.html')
@@ -349,38 +346,37 @@ def add_header(req):
 ###############################################################################
 # Likes related section
 
-@app.route('/users/add_like/<int:msg_id>',methods=["POST"])
+@app.route('/users/add_like/<int:msg_id>',methods=["GET", "POST"])
 def add_like(msg_id):
     """Toggle likes for logged in User"""
-    
+    # if message id not in user.liked like it
+    # if it is in user.liked unlike it
+    # for g.user.likes if  in g.user.likes.
+    # for user in g.user
     if not g.user:
         flash('Must be logged in to like messages.','danger')
         redirect('/')
 
     like_msg = Message.query.get_or_404(msg_id)
 
-    if like_msg in g.user.likes:
-        like_entry = Likes.query.filter_by(message_id=msg_id).one()
-        db.session.delete(like_entry)
-        db.session.commit()
-    else:
-        new_like = Likes(user_id=g.user.id,message_id=like_msg.id)
-        db.session.add(new_like)
-        db.session.commit()
+    likes = g.user.likes
+
+    test = g.user.likes
+    print('**************************************************************************************************')
+    for messsage in likes:
+            
+        print('**************************************************************************************************')
+        print(like.id)
+
+# def is_followed_by(self, other_user):
+#         """Is this user followed by `other_user`?"""
+
+#         found_user_list = [user for user in self.followers if user == other_user]
+#         return len(found_user_list) == 1
+    raise
+
     
-    
+
     return redirect('/')
 
-@app.route('/users/<int:user_id>/likes')
-def show_likes(user_id):
-    if not g.user:
-        flash("Not allowed to view this.", "danger")
-        return redirect("/")
 
-    user = User.query.get_or_404(user_id)
-    likes = [like for like in user.likes]
-    return render_template('users/likes.html', user=user, likes=likes)
-
-
-
-# print('**************************************************************************************************')
